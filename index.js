@@ -13,7 +13,7 @@ const configFile = path.join(configsDir, 'gooi', 'config.json');
 const config = require(configFile);
 
 if (config.url == null) {
-	stderr('config: url required');
+	console.error('config: url required');
 	process.exit(1);
 }
 config.port = config.port || 443;
