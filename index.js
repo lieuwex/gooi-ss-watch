@@ -21,6 +21,9 @@ config.prefix = config.prefix || '/gooi/';
 
 const gooi = new Gooi(config.url, config.port, config.prefix);
 
+const log = (...items) => console.log(new Date().toISOString(), ...items);
+const error = (...items) => console.error(new Date().toISOString(), ...items);
+
 fs.watch(SS_DIR, async (type, fname) => {
 	if (type !== 'rename' || !/^Screenshot at.+\.png$/.test(fname)) {
 		return;
@@ -34,12 +37,16 @@ fs.watch(SS_DIR, async (type, fname) => {
 
 	try {
 		const url = await gooi.gooi([ filePath ]);
-		toClipboard.sync(url.trim());
+		const trimmed = url.trim();
+
+		toClipboard.sync(trimmed);
+
 		notifier.notify('Screenshot uploaded');
+		log(`uploaded: ${trimmed}`);
 	} catch (err) {
 		notifier.notify('Error while uploading screenshot');
-		console.error(err);
+		error('upload error', err);
 	}
 });
 
-console.log(`watching ${SS_DIR}`);
+log(`watching ${SS_DIR}`);
