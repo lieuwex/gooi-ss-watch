@@ -2,7 +2,7 @@
 
 const SS_DIR = `${process.env['HOME']}/screenshots/`;
 
-const fs = require('fs');
+const chokidar = require('chokidar');
 const path = require('path');
 const Gooi = require('gooi');
 const toClipboard = require('to-clipboard');
@@ -24,19 +24,17 @@ const gooi = new Gooi(config.url, config.port, config.prefix);
 const log = (...items) => console.log(new Date().toISOString(), ...items);
 const error = (...items) => console.error(new Date().toISOString(), ...items);
 
-fs.watch(SS_DIR, async (type, fname) => {
-	if (type !== 'rename' || !/^Screenshot at.+\.png$/.test(fname)) {
+chokidar.watch(SS_DIR, {
+	depth: 0,
+	ignoreInitial: true,
+}).on('add', async file => {
+	if (!/Screenshot at.+\.png$/.test(file)) {
 		return;
 	}
-	const filePath = path.join(SS_DIR, fname);
-	if (!fs.existsSync(filePath)) {
-		return;
-	}
-
 	notifier.notify('Uploading screenshot...');
 
 	try {
-		const url = await gooi.gooi([ filePath ]);
+		const url = await gooi.gooi([ file ]);
 		const trimmed = url.trim();
 
 		toClipboard.sync(trimmed);
