@@ -12,14 +12,14 @@ const configsDir = process.env['XDG_CONFIG_HOME'] || `${process.env['HOME']}/.co
 const configFile = path.join(configsDir, 'gooi', 'config.json');
 const config = require(configFile);
 
-if (config.url == null) {
-	console.error('config: url required');
+if (config.hostname == null) {
+	console.error('config: hostname required');
 	process.exit(1);
 }
 config.port = config.port || 443;
 config.prefix = config.prefix || '/gooi/';
 
-const gooi = new Gooi(config.url, config.port, config.prefix);
+const gooi = new Gooi(config.hostname, config.port, config.prefix);
 
 const log = (...items) => console.log(new Date().toISOString(), ...items);
 const error = (...items) => console.error(new Date().toISOString(), ...items);
