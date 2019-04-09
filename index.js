@@ -24,13 +24,24 @@ const gooi = new Gooi(config.hostname, config.port, config.prefix);
 const log = (...items) => console.log(new Date().toISOString(), ...items);
 const error = (...items) => console.error(new Date().toISOString(), ...items);
 
+const sleep = time => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve();
+		}, time);
+	});
+};
+
 chokidar.watch(SS_DIR, {
 	depth: 0,
 	ignoreInitial: true,
 }).on('add', async file => {
-	if (!/Screenshot at.+\.png$/.test(file)) {
+	if (!/.png$/.test(file)) {
 		return;
 	}
+
+	await sleep(250);
+
 	notifier.notify('Uploading screenshot...');
 
 	try {
